@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BotObserver.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DBPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBSettings" Type="System.String" Scope="User">
+      <Value Profile="(Default)">settings.db</Value>
+    </Setting>
+    <Setting Name="DBLogs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">logs.db</Value>
+    </Setting>
+    <Setting Name="DBTasks" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tasks.db</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
