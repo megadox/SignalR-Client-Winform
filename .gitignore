@@ -7,3 +7,5 @@
 /BotObserver/.vs
 /RandomSelect/bin/Debug
 /RandomSelect/obj/Debug
+/BotObserver/obj/Release
+/BotObserver/bin/Release
