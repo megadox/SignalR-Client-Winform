@@ -48,7 +48,7 @@ namespace BotObserver
 
         private void MainStarter_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (MessageBox.Show("Are you sure BA-Assist Observer Exit ?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure BA-BotObserver Exit ?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
             {
                 beaconTray.Hide();
                 beaconTray.Stop();

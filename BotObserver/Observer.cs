@@ -16,6 +16,8 @@ using System.IO;
 using DevExpress.Utils.Drawing.Helpers;
 using static DevExpress.XtraEditors.Mask.MaskSettings;
 using DevExpress.XtraEditors.SyntaxEditor;
+using System.Management;
+using System.Reflection;
 
 
 namespace BotObserver
@@ -33,7 +35,10 @@ namespace BotObserver
         string QueueID_ = string.Empty;
         string Filepath_ = string.Empty;
         string TaskName_ = string.Empty;
-        bool MessageReceived = false;
+        //bool MessageReceived = false;
+        string latestStatus = string.Empty ;
+        string latestStatus_Send = string.Empty ;
+        int CheckInterval = 5000;   // 5초
 
         BeaconTray beaconTray;
 
@@ -52,23 +57,63 @@ namespace BotObserver
 
             this.btnDisconnect.Enabled = false;
 
-            SetData();
+             SetData();
 
-            CreateHubConnection();
+            if(!CreateHubConnection())
+            {
+                this.btnConnect.Enabled = false;
+                this.btnDisconnect.Enabled = false;
+            }
+
+            this.btnTest.Click += BtnTest_Click;
+
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            lblVersion.Text = version.ToString();
+            ckbLog.CheckedChanged += CkbLog_CheckedChanged;
+            ckbLog.Checked = ClsStruct.LogWrite;
+
         }
 
-        private void CreateHubConnection()
+        private void CkbLog_CheckedChanged(object sender, EventArgs e)
         {
-            if(ClsStruct.hubConnection_ == null || ClsStruct.hubConnection_.State == HubConnectionState.Disconnected)
+            ClsStruct.LogWrite = ckbLog.Checked;
+        }
+
+        private async void BtnTest_Click(object sender, EventArgs e)
+        {
+            //QueueTask task = new QueueTask();
+            //task.ID = "35";
+            //task.TaskFile = "회계-부가세신고-1.0.fpx";
+            //task.Status = "Start";
+
+            //DataHelper.BASE_URL = "https://localhost:7060/";
+            //DataHelper.SubPath = "TRM/";
+            //DataHelper.DetailPath = "updateQueueTask";
+
+            await QueueTaskRun("회계-부가세신고-1.0.fpx", "23");
+            //await DataHelper.Update_(task);
+        }
+
+        private bool CreateHubConnection()
+        {
+            try
             {
+                if (ClsStruct.hubConnection_ == null || ClsStruct.hubConnection_.State == HubConnectionState.Disconnected)
+                {
 
-                string hubUrl = ClsStruct.BASE_URL + "ChatHub";
+                    string hubUrl = ClsStruct.BASE_URL + "ChatHub";
 
-                ClsStruct.hubConnection_ = new HubConnectionBuilder()
-                .WithUrl(new Uri(hubUrl))
-                .Build();
+                    ClsStruct.hubConnection_ = new HubConnectionBuilder()
+                    .WithUrl(new Uri(hubUrl))
+                    .Build();
+                }
             }
-            
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void Observer_FormClosing(object sender, FormClosingEventArgs e)
@@ -94,14 +139,20 @@ namespace BotObserver
 
             this.listBox1.Location = new System.Drawing.Point(x_, y_ + 10);
             this.listBox1.Height = 200;
+            this.listBox1.Width = txtServer.Width;
+            ckbLog.Location = new System.Drawing.Point(lblVersion.Location.X, lblVersion.Location.Y + 30);
+
+            ckbLog.Checked = ClsStruct.LogWrite;
 
             // 폼이 다시 보일 때 이벤트 핸들러가 정상적으로 설정되어 있는지 확인하고, 재설정한다.
-            RegisterHubConnectionEvents();
+            //RegisterHubConnectionEvents();
 
             // 폼이 다시 보일 때 PlayerLiveCheck 다시 시작
-            if (ClsStruct.hubConnection_.State == HubConnectionState.Connected)
+            if(ClsStruct.hubConnection_ !=null)
             {
-                this.Invoke(new Action(() =>
+                if (ClsStruct.hubConnection_.State == HubConnectionState.Connected)
+                {
+                    this.Invoke(new Action(() =>
                     {
                         this.btnConnect.Enabled = false;
                         this.btnDisconnect.Enabled = true;
@@ -109,8 +160,10 @@ namespace BotObserver
                         lblStatus.Text = "Connected";
                         lblStatus.ForeColor = Color.Green;
                     }));
-                StartPlayerLiveCheck();
+                    StartPlayerLiveCheck();
+                }
             }
+            
         }
 
         private void Observer_Load(object sender, EventArgs e)
@@ -159,7 +212,13 @@ namespace BotObserver
 
         private async void BtnConnect_Click(object sender, EventArgs e)
         {
-            CreateHubConnection();
+            if (!CreateHubConnection())
+            {
+                this.btnConnect.Enabled = false;
+                this.btnDisconnect.Enabled = false;
+
+                return;
+            }
 
 
             this.btnConnect.Enabled = false;
@@ -195,6 +254,8 @@ namespace BotObserver
             //});
 
             //ClsStruct.hubConnection_.Closed += HubConnection_Closed;
+
+            string bot_id = ClsStruct.Bot_ID;
 
             try
             {
@@ -245,31 +306,31 @@ namespace BotObserver
 
         private async Task HandleReceivedMessage(string user, string  message)
         {
-            if(MessageReceived)
-            {
-                return;
-            }
+            //if(MessageReceived)
+            //{
+            //    return;
+            //}
 
             try
             {
-                MessageReceived = true;
+                //MessageReceived = true;
 
-                await Task.Delay(3000);
+                await Task.Delay(CheckInterval);
 
                 string[] arr_msg = message.Split(':');
                 if (!string.IsNullOrEmpty(message))
                 {
                     // 서버에서 메세지를 받으면 상태 체크해서 보내는 로직을 잠시 중지 한다.
-                    MessageReceived = true;
+                    //MessageReceived = true;
                     queueServer = user;
                     //ServerMessage = arr_msg[1].Trim();
                     ServerMessageParse(message);
-                    MessageReceived = false;
+                    //MessageReceived = false;
                 }
             }
             finally
             {
-                MessageReceived = false;
+                //MessageReceived = false;
             }
 
         }
@@ -291,7 +352,7 @@ namespace BotObserver
         {
             this.btnConnect.Enabled = true;
             this.btnDisconnect.Enabled = false;
-            MessageReceived = false;    
+            //MessageReceived = false;    
 
             tryCount = 0;
             connectionRetry = false;
@@ -313,14 +374,27 @@ namespace BotObserver
 
         private void SetData()
         {
-            RDADashboard dashboard = RDADashboard_Service.Get();
-            if(dashboard != null )
+            try
             {
-                txtServer.Text = ClsStruct.BASE_URL =  dashboard.BASE_URL;
-                txtSubpath.Text = ClsStruct.SubPath = dashboard.SubPath;
-                txtRDAID.Text = ClsStruct.Bot_ID = dashboard.Bot_ID;
-                txtNickname.Text = ClsStruct.Bot_Name = dashboard.Bot_Name;
+                RDADashboard dashboard = RDADashboard_Service.Get();
+                if (dashboard != null)
+                {
+                    txtServer.Text = ClsStruct.BASE_URL = dashboard.BASE_URL;
+                    txtSubpath.Text = ClsStruct.SubPath = dashboard.SubPath;
+                    txtRDAID.Text = ClsStruct.Bot_ID = dashboard.Bot_ID;
+                    txtNickname.Text = ClsStruct.Bot_Name = dashboard.Bot_Name;
+                    //MessageBox.Show($"DB Info :: dbpath :: {ClsStruct.dbPath_} Errors :: {ClsStruct.Errors}");
+                }
+                else
+                {
+                    MessageBox.Show("DB Connect Error");
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"DB Connect Error :: {ex.ToString()}");
+            }
+            
         }
 
         private async Task CheckConnectionStateAsync()
@@ -347,7 +421,7 @@ namespace BotObserver
 
                 try
                 {
-                    await Task.Delay(5000); // 5초 대기
+                    await Task.Delay(CheckInterval); // 5초 대기
                     await ClsStruct.hubConnection_.StartAsync();
                     //Console.WriteLine("Reconnected to the server");
                     listBox1.Items.Insert(0, "Reconnected to the server");
@@ -370,10 +444,10 @@ namespace BotObserver
                 try
                 {
 
-                    if(MessageReceived)
-                    {
-                        continue;
-                    }
+                    //if(MessageReceived)
+                    //{
+                    //    continue;
+                    //}
 
                     string live_ = PlayerCheck();
 
@@ -392,8 +466,12 @@ namespace BotObserver
                         await UpdateUIAsync($"{live_}");
                     }
                     
+                    if(live_ != latestStatus_Send)
+                    {
+                        await ClsStruct.hubConnection_.InvokeAsync("SendMessage", ClsStruct.Bot_ID, live_);
+                    }
 
-                    await ClsStruct.hubConnection_.InvokeAsync("SendMessage", ClsStruct.Bot_ID, live_);
+                    latestStatus_Send = live_;
 
                 }
                 catch (Exception ex)
@@ -401,7 +479,7 @@ namespace BotObserver
                     //listBox1.Items.Add(ex.Message);
                 }
 
-                await Task.Delay(5000); // 5초 간격으로 확인
+                await Task.Delay(CheckInterval); // 초 간격으로 확인
             }
 
         }
@@ -409,14 +487,45 @@ namespace BotObserver
         private string PlayerCheck()
         {
             //BA-Player
-            string AssistName = "BA-Player";
-            Process[] aproc = Process.GetProcessesByName(AssistName);
+            string PlayerName = "BA-Player";
+            Process[] aproc = Process.GetProcessesByName(PlayerName);
             if (aproc == null || aproc.Length == 0)
             {
-                return "Waiting";
+                string AssistName = "BA-Assist";
+                Process[] aproc_a = Process.GetProcessesByName(AssistName);
+                if(aproc_a !=null && aproc_a.Length > 0)
+                {
+                    Process proc_batem = aproc_a[0];
+                    List<Process> children = new List<Process>();
+                    ManagementObjectSearcher mos = new ManagementObjectSearcher(
+                        string.Format("Select * from Win32_Process Where ParentProcessID={0}", proc_batem.Id));
+                    foreach (ManagementObject mo in mos.Get())
+                    {
+                        children.Add(Process.GetProcessById(Convert.ToInt32(mo["ProcessID"])));
+                    }
+
+                    foreach (Process proc in children)
+                    {
+                        if (proc.ProcessName == "BA-Player" || proc.ProcessName == "python")
+                        {
+                            return "Running";
+                        }
+                    }
+
+                    return "Waiting";
+                }
+                else
+                {
+                    return "Waiting";
+                }
+                
+            }
+            else
+            {
+                return "Running";
             }
 
-            return "Running";
+            
         }
 
         private async Task UpdateUIAsync(string message, string status = null, Color? color = null)
@@ -450,7 +559,22 @@ namespace BotObserver
         private void PerformUIUpdate(string message, string status, Color? color)
         {
             string time_ = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            listBox1.Items.Insert(0, $"{time_} : {message}");
+            if(latestStatus != message)
+            {
+                latestStatus = message;
+
+                listBox1.Items.Insert(0, $"{time_} : {message}");
+            }
+
+            if (latestStatus == "Running" || latestStatus == "Waiting")
+            {
+                
+            }
+            else
+            {
+                listBox1.Items.Insert(0, $"{time_} : {message}");
+            }
+           
 
             if (status != null)
             {
@@ -492,45 +616,76 @@ namespace BotObserver
                     }));
                 }
 
-
-
-
                 await WriteQueueInfo();
+                await UpdateQueueTask(TaskName_, QueueID_);
+                await QueueTaskRun(TaskName_, QueueID_);
+                
+            }
+            else
+            {
+                Console.WriteLine($"xxxxxxx yyyyyy :: {msg}");
             }
         }
 
         private void RegisterHubConnectionEvents()
         {
-            ClsStruct.hubConnection_.On<string, string>("ReceiveMessage", async (user, message) =>
+            if(ClsStruct.hubConnection_ != null)
             {
-                if (MessageReceived) return;
-
-                var newMessage = $"{user} : {message}";
-                string[] arr_msg = message.Split(':');
-                if (!string.IsNullOrEmpty(message))
+                ClsStruct.hubConnection_.On<string, string>("ReceiveMessage", async (user, message) =>
                 {
-                    // 서버에서 메시지를 받으면 상태 체크해서 보내는 로직을 잠시 중지한다.
-                    MessageReceived = true;
-                    queueServer = user;
-                    await ServerMessageParse(message);
+                    //if (MessageReceived) return;
+                    if(user =="QueueServer")
+                    {
+                        var newMessage = $"{user} : {message}";
+                        string[] arr_msg = message.Split(':');
+                        if (!string.IsNullOrEmpty(message))
+                        {
+                            if (ClsStruct.LogWrite)
+                            {
+                                string dts_0 = DateTime.Now.ToString("yyyyMMdd");
 
-                    await Task.Delay(5000); // 비동기 대기를 위해 await 추가
-                    MessageReceived = false;
-                }
-            });
+                                string logPath = Path.Combine(Application.StartupPath, "logs");
 
-            ClsStruct.hubConnection_.Closed += HubConnection_Closed;
+                                Directory.CreateDirectory(logPath);
+                                logPath = Path.Combine(Application.StartupPath, "logs", $"logFile{dts_0}_{user}.txt");
+
+                                if (!File.Exists(logPath))
+                                {
+                                    File.WriteAllText(logPath, "Start =======");
+                                }
+
+                                string dts = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                                string txt = $"{dts}  =====  RegisterHubConnectionEvents {user} ::::: {newMessage}";
+                                File.AppendAllLines(logPath, new string[] { txt });
+                            }
+
+
+                            //MessageReceived = true;
+                            queueServer = user;
+                            await ServerMessageParse(message);
+
+                            await Task.Delay(3000); // 비동기 대기를 위해 await 추가
+                                                    //MessageReceived = false;
+                        }
+                    }
+                });
+
+                ClsStruct.hubConnection_.Closed += HubConnection_Closed;
+            }
+            
         }
 
         private async void CleraListbox()
         {
-            //this.Invoke(new Action(() =>{
-
-            //}));
-            if (listBox1.Items.Count > 20)
+            this.Invoke(new Action(() =>
             {
-                listBox1.Items.Clear();
-            }
+                if (listBox1.Items.Count > 20)
+                {
+                    listBox1.Items.Clear();
+                }
+            }));
+
         }
 
         /// <summary>
@@ -550,6 +705,58 @@ namespace BotObserver
             {
                 File.WriteAllLines(filepath, new string[] {QueueID_, Filepath_ });
             }
+        }
+
+        private async Task QueueTaskRun(string taskfile, string queueid)
+        {
+            string playerPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86);
+            playerPath = System.IO.Path.Combine(playerPath, "BA-Assist", "BA-Player.exe");
+
+            string taskfileFullpath = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData)
+                ,"BA-Assist","Tasks", taskfile);
+
+
+
+            string arg = $"{taskfileFullpath} {"Call"} {queueid}";
+
+            bool result = await RunPlayer(playerPath, arg);
+        }
+
+        private async Task<bool> RunPlayer(string fileName, string arguments)
+        {
+            try
+            {
+                System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                proc.StartInfo.FileName = fileName;
+                proc.StartInfo.Arguments = arguments;
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Verb = "runas";
+                proc.Start();
+                proc.WaitForExit();
+                System.Threading.Thread.Sleep(10);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                //MessageBox.Show($"File Name : {fileName}, arguments : {arguments}, {ex.ToString()}");
+                return false;
+            }
+
+        }
+
+        private async Task UpdateQueueTask(string taskfile, string queueid)
+        {
+            QueueTask task = new QueueTask();
+            task.ID = queueid;
+            task.TaskFile = taskfile;
+            task.Status = "Start";
+
+            //DataHelper.BASE_URL = "https://localhost:7060/";
+            //DataHelper.SubPath = "TRM/";
+            DataHelper.DetailPath = "updateQueueTask";
+
+            await DataHelper.Update_(task);
         }
     }
 }

@@ -41,6 +41,9 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.labelControl4 = new DevExpress.XtraEditors.LabelControl();
             this.lblStatus = new DevExpress.XtraEditors.LabelControl();
+            this.btnTest = new DevExpress.XtraEditors.SimpleButton();
+            this.lblVersion = new DevExpress.XtraEditors.LabelControl();
+            this.ckbLog = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.txtServer.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtRDAID.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtSubpath.Properties)).BeginInit();
@@ -61,7 +64,7 @@
             // txtServer
             // 
             this.txtServer.Enabled = false;
-            this.txtServer.Location = new System.Drawing.Point(133, 37);
+            this.txtServer.Location = new System.Drawing.Point(190, 37);
             this.txtServer.Margin = new System.Windows.Forms.Padding(2);
             this.txtServer.Name = "txtServer";
             this.txtServer.Properties.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -83,7 +86,7 @@
             // txtRDAID
             // 
             this.txtRDAID.Enabled = false;
-            this.txtRDAID.Location = new System.Drawing.Point(133, 120);
+            this.txtRDAID.Location = new System.Drawing.Point(190, 120);
             this.txtRDAID.Margin = new System.Windows.Forms.Padding(2);
             this.txtRDAID.Name = "txtRDAID";
             this.txtRDAID.Properties.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -97,7 +100,7 @@
             this.btnConnect.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnConnect.Appearance.Options.UseBackColor = true;
             this.btnConnect.Appearance.Options.UseFont = true;
-            this.btnConnect.Location = new System.Drawing.Point(133, 204);
+            this.btnConnect.Location = new System.Drawing.Point(190, 204);
             this.btnConnect.Margin = new System.Windows.Forms.Padding(2);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(140, 34);
@@ -111,7 +114,7 @@
             this.btnDisconnect.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDisconnect.Appearance.Options.UseBackColor = true;
             this.btnDisconnect.Appearance.Options.UseFont = true;
-            this.btnDisconnect.Location = new System.Drawing.Point(312, 204);
+            this.btnDisconnect.Location = new System.Drawing.Point(369, 204);
             this.btnDisconnect.Margin = new System.Windows.Forms.Padding(2);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(140, 34);
@@ -122,7 +125,7 @@
             // txtSubpath
             // 
             this.txtSubpath.Enabled = false;
-            this.txtSubpath.Location = new System.Drawing.Point(133, 77);
+            this.txtSubpath.Location = new System.Drawing.Point(190, 77);
             this.txtSubpath.Margin = new System.Windows.Forms.Padding(2);
             this.txtSubpath.Name = "txtSubpath";
             this.txtSubpath.Properties.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -144,7 +147,7 @@
             // txtNickname
             // 
             this.txtNickname.Enabled = false;
-            this.txtNickname.Location = new System.Drawing.Point(133, 161);
+            this.txtNickname.Location = new System.Drawing.Point(190, 161);
             this.txtNickname.Margin = new System.Windows.Forms.Padding(2);
             this.txtNickname.Name = "txtNickname";
             this.txtNickname.Properties.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -167,16 +170,16 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 17;
-            this.listBox1.Location = new System.Drawing.Point(133, 264);
+            this.listBox1.Location = new System.Drawing.Point(190, 264);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(350, 191);
+            this.listBox1.Size = new System.Drawing.Size(350, 140);
             this.listBox1.TabIndex = 10;
             // 
             // labelControl4
             // 
             this.labelControl4.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelControl4.Appearance.Options.UseFont = true;
-            this.labelControl4.Location = new System.Drawing.Point(11, 264);
+            this.labelControl4.Location = new System.Drawing.Point(45, 264);
             this.labelControl4.Margin = new System.Windows.Forms.Padding(2);
             this.labelControl4.Name = "labelControl4";
             this.labelControl4.Size = new System.Drawing.Size(46, 17);
@@ -189,19 +192,58 @@
             this.lblStatus.Appearance.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.lblStatus.Appearance.Options.UseFont = true;
             this.lblStatus.Appearance.Options.UseForeColor = true;
-            this.lblStatus.Location = new System.Drawing.Point(12, 285);
+            this.lblStatus.Location = new System.Drawing.Point(45, 299);
             this.lblStatus.Margin = new System.Windows.Forms.Padding(2);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(85, 21);
             this.lblStatus.TabIndex = 12;
             this.lblStatus.Text = "Disconnect";
             // 
+            // btnTest
+            // 
+            this.btnTest.Appearance.BackColor = DevExpress.LookAndFeel.DXSkinColors.FillColors.Warning;
+            this.btnTest.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTest.Appearance.Options.UseBackColor = true;
+            this.btnTest.Appearance.Options.UseFont = true;
+            this.btnTest.Location = new System.Drawing.Point(213, 485);
+            this.btnTest.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(140, 34);
+            this.btnTest.TabIndex = 13;
+            this.btnTest.Text = "Test";
+            this.btnTest.ToolTip = "Disconnect server";
+            this.btnTest.Visible = false;
+            // 
+            // lblVersion
+            // 
+            this.lblVersion.Appearance.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVersion.Appearance.Options.UseFont = true;
+            this.lblVersion.Location = new System.Drawing.Point(45, 357);
+            this.lblVersion.Margin = new System.Windows.Forms.Padding(2);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(18, 17);
+            this.lblVersion.TabIndex = 14;
+            this.lblVersion.Text = "ver";
+            // 
+            // ckbLog
+            // 
+            this.ckbLog.AutoSize = true;
+            this.ckbLog.Location = new System.Drawing.Point(45, 405);
+            this.ckbLog.Name = "ckbLog";
+            this.ckbLog.Size = new System.Drawing.Size(84, 21);
+            this.ckbLog.TabIndex = 15;
+            this.ckbLog.Text = "Log Write";
+            this.ckbLog.UseVisualStyleBackColor = true;
+            // 
             // Observer
             // 
             this.Appearance.Options.UseFont = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(565, 480);
+            this.ClientSize = new System.Drawing.Size(666, 514);
+            this.Controls.Add(this.ckbLog);
+            this.Controls.Add(this.lblVersion);
+            this.Controls.Add(this.btnTest);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.labelControl4);
             this.Controls.Add(this.listBox1);
@@ -246,6 +288,9 @@
         private System.Windows.Forms.ListBox listBox1;
         private DevExpress.XtraEditors.LabelControl labelControl4;
         private DevExpress.XtraEditors.LabelControl lblStatus;
+        private DevExpress.XtraEditors.SimpleButton btnTest;
+        private DevExpress.XtraEditors.LabelControl lblVersion;
+        private System.Windows.Forms.CheckBox ckbLog;
     }
 }
 

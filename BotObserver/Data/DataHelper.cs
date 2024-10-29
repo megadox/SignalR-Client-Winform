@@ -16,8 +16,9 @@ namespace BotObserver.Data
         public static string TypeName = string.Empty;
         public static string DashboardURL = string.Empty;
         public static string TestURL = "ping";
+        public static string DetailPath = string.Empty;
 
-        public static void SetURL()
+        public static void SetURL(string detailPath = "")
         {
             if (BASE_URL.Length == 0)
             {
@@ -105,6 +106,28 @@ namespace BotObserver.Data
             {
                 string ext = ex.ToString();
                 return null;
+            }
+        }
+
+        public static async Task<bool> Update_<T>(T item)
+        {
+            var jsonbody = JsonConvert.SerializeObject(item);
+            var content = new StringContent(jsonbody, Encoding.UTF8, "application/json");
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BASE_URL);
+                string uri = BASE_URL + SubPath;
+                if(!string.IsNullOrEmpty(DetailPath))
+                {
+                    uri += DetailPath;
+                }
+                var result = await client.PostAsync($"{uri}", content);
+
+                if (result.IsSuccessStatusCode)
+                    return true;
+                else
+                    return false;
             }
         }
     }

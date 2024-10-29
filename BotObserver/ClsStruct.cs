@@ -18,5 +18,10 @@ namespace BotObserver
         public static string Bot_Name;
         public static bool Application_Exit;
         public static HubConnection hubConnection_;
+
+        public static string dbPath_;
+        public static string Errors;
+
+        public static bool LogWrite;
     }
 }

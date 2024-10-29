@@ -84,6 +84,7 @@ namespace BotObserver.Data
             try
             {
                 string dbpath = GetDBPath();
+                ClsStruct.dbPath_ = dbpath;
 
                 SQLite sqllite = new SQLite(dbpath);
 
@@ -104,6 +105,7 @@ namespace BotObserver.Data
             }
             catch (Exception ex)
             {
+                ClsStruct.Errors = ex.ToString();
                 throw ex;
             }
         }
